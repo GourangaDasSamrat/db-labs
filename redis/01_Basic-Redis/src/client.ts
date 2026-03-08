@@ -1,4 +1,3 @@
-import "dotenv/config";
 import Redis from "ioredis";
 
 const connectionUri = process.env.REDIS_URI;
