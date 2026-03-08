@@ -6,17 +6,10 @@
   "author": "Gouranga Das Samrat",
   "type": "module",
   "main": "dist/index.js",
-  "scripts": {
-    "dev": "tsx watch src/redis.ts",
-    "start": "tsx src/redis.ts"
-  },
   "devDependencies": {
-    "@types/node": "^25.3.5",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "bun-types": "latest"
   },
   "dependencies": {
-    "dotenv": "^17.3.1",
     "ioredis": "^5.10.0"
   }
 }
