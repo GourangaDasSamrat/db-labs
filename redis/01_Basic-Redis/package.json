@@ -11,5 +11,9 @@
   },
   "dependencies": {
     "ioredis": "^5.10.0"
-  }
+  },
+  "engines": {
+    "bun": ">=1.3.9"
+  },
+  "packageManager": "bun@1.3.9"
 }
