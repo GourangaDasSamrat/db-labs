@@ -2,7 +2,7 @@
 
 ## Prerequisite
 
-- Bun
+- Bun (1.3.9 or higher)
 - Redis uri (your local, docker or any cloud)
 
 ## How to use
