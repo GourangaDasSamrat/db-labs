@@ -1,21 +1,27 @@
+import client from "@/client";
 import axios from "axios";
 import express, { Response } from "express";
 
-// initialize express app
 const app = express();
-
-// configure port
 const port = process.env.PORT || 3000;
 
-// routes
 app.get("/", async (_, res: Response) => {
+  const cacheValue = await client.get("todos");
+
+  if (cacheValue) {
+    return res.json(JSON.parse(cacheValue)); // parse cached data
+  }
+
   const { data } = await axios.get(
     "https://jsonplaceholder.typicode.com/todos",
   );
+
+  await client.set("todos", JSON.stringify(data)); // convert to string
+  await client.expire("todos", 100);
+
   return res.json(data);
 });
 
-// run app
 app.listen(port, () => {
   console.log(`Server running locally on port ${port}`);
 });
