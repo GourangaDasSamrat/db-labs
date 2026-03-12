@@ -1,0 +1,19 @@
+{
+  "name": "02_basic-redis-app",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start":"bun run src/app.ts",
+    "dev":"bun run --hot src/app.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
