@@ -4,16 +4,19 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start":"bun run src/app.ts",
-    "dev":"bun run --hot src/app.ts"
+    "start": "bun run src/app.ts",
+    "dev": "bun run --hot src/app.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "axios": "^1.13.6",
+    "express": "^5.2.1",
+    "ioredis": "^5.10.0"
   }
 }
