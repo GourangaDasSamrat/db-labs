@@ -7,6 +7,10 @@
     "start": "bun run src/app.ts",
     "dev": "bun run --hot src/app.ts"
   },
+  "engines": {
+    "bun": ">=1.3.9"
+  },
+  "packageManager": "bun@1.3.9",
   "devDependencies": {
     "@types/bun": "latest",
     "@types/express": "^5.0.6"
