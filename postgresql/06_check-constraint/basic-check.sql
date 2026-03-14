@@ -9,7 +9,7 @@ CREATE TABLE
     contacts (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
         name VARCHAR(150) NOT NULL,
-        num VARCHAR(15) UNIQUE CHECK (length (num) >= 10)
+        num VARCHAR(15) UNIQUE CONSTRAINT num_no_less_than_10digits CHECK (length (num) >= 10)
     );
 
 -- 4. Insert data
