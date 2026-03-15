@@ -1,0 +1,51 @@
+// Goats schema — all 5 tables with relationships
+// Visualize at https://dbdiagram.io
+
+Table goats {
+  id            uuid        [pk, default: `gen_random_uuid()`]
+  name          varchar(150) [not null, unique]
+  sport         varchar(100) [not null, unique, note: 'One GOAT per sport']
+  world_rank    int          [not null]
+  age           int          [not null]
+  nationality   varchar(100) [not null]
+}
+
+Table goat_profiles {
+  id                uuid        [pk, default: `gen_random_uuid()`]
+  goat_id           uuid        [not null, unique, ref: - goats.id]  // unique = one-to-one
+  nickname          varchar(100)
+  debut_year        int          [not null]
+  career_titles     int          [not null, default: 0]
+  est_net_worth_usd bigint
+  biography         text
+}
+
+Table goat_achievements {
+  id            uuid        [pk, default: `gen_random_uuid()`]
+  goat_id       uuid        [not null, ref: > goats.id]  // no unique = one-to-many
+  title         varchar(200) [not null]
+  year_achieved int          [not null]
+  category      varchar(50)  [not null, note: 'Olympic | World Championship | Grand Slam | League Title | Individual Award | Record']
+  description   text
+}
+
+Table sponsors {
+  id           uuid        [pk, default: `gen_random_uuid()`]
+  brand_name   varchar(150) [not null, unique]
+  industry     varchar(100) [not null]
+  country      varchar(100) [not null]
+  founded_year int
+}
+
+Table goat_sponsors {
+  goat_id        uuid    [not null, ref: > goats.id]      // many-to-many bridge
+  sponsor_id     uuid    [not null, ref: > sponsors.id]
+  deal_value_usd bigint
+  start_year     int     [not null]
+  end_year       int     [note: 'NULL = currently active']
+  is_primary     boolean [not null, default: false]
+
+  indexes {
+    (goat_id, sponsor_id) [pk]  // composite PK prevents duplicate pairs
+  }
+}
