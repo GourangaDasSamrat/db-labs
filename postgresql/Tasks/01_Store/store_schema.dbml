@@ -1,0 +1,29 @@
+// Use gen_random_uuid() for PostgreSQL UUIDs
+Table customers {
+  cust_id uuid [pk, default: `gen_random_uuid()`]
+  cust_name text [not null]
+}
+
+Table products {
+  p_id uuid [pk, default: `gen_random_uuid()` ]
+  p_name text [not null]
+  price numeric(10,2) [not null]
+}
+
+Table orders {
+  ord_id uuid [pk, default: `gen_random_uuid()`]
+  ord_date timestamp [default: `now()`]
+  cust_id uuid [not null]
+}
+
+Table ord_items {
+  items_id uuid [pk, default: `gen_random_uuid()`]
+  ord_id uuid [not null]
+  p_id uuid [not null]
+  quantity integer [not null]
+}
+
+// Relationships
+Ref: orders.cust_id > customers.cust_id [delete: cascade]
+Ref: ord_items.ord_id > orders.ord_id [delete: cascade]
+Ref: ord_items.p_id > products.p_id [delete: cascade]
