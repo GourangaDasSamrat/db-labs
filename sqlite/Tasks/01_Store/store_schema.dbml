@@ -1,0 +1,44 @@
+// Use dbdiagram.io to visualize this e-commerce schema
+
+Table customers {
+  cust_id text [pk, note: 'UUID Generated']
+  cust_name text [not null]
+
+  Note: 'Store customer identification and names'
+}
+
+Table products {
+  p_id text [pk, note: 'UUID Generated']
+  p_name text [not null]
+  price numeric(10,2) [not null, note: 'Must be >= 0']
+
+  Note: 'Store product catalog and pricing'
+}
+
+Table orders {
+  ord_id text [pk, note: 'UUID Generated']
+  ord_date datetime [default: `now()`]
+  cust_id text [not null]
+
+  Note: 'Links customers to specific order events'
+}
+
+Table ord_items {
+  items_id text [pk, note: 'UUID Generated']
+  ord_id text [not null]
+  p_id text [not null]
+  quantity integer [not null, note: 'Must be > 0']
+
+  Note: 'Junction table linking orders to products with quantities'
+}
+
+// --- Relationships ---
+
+// One customer can have many orders
+Ref: customers.cust_id < orders.cust_id [update: cascade, delete: cascade]
+
+// One order can have many items
+Ref: orders.ord_id < ord_items.ord_id [update: cascade, delete: cascade]
+
+// One product can appear in many order items
+Ref: products.p_id < ord_items.p_id [update: cascade, delete: cascade]
