@@ -1,0 +1,72 @@
+// Use dbdiagram.io to visualize this schema
+// Project: GOAT Sports Database (SQLite Compatible)
+
+Table goats {
+  id text [pk, note: 'UUID String']
+  name varchar(150) [not null, unique]
+  sport varchar(100) [not null, unique]
+  world_rank int [not null]
+  age int [not null]
+  nationality varchar(100) [not null]
+
+  Note: 'The core table containing primary athlete data'
+}
+
+Table goat_profiles {
+  id text [pk]
+  goat_id text [not null, unique, note: 'Enforces 1:1 relationship']
+  nickname varchar(100)
+  debut_year int [not null]
+  career_titles int [not null, default: 0]
+  est_net_worth_usd bigint
+  biography text
+
+  Note: 'Extended athlete details (1:1)'
+}
+
+Table goat_achievements {
+  id text [pk]
+  goat_id text [not null, note: 'No unique constraint = 1:N']
+  title varchar(200) [not null]
+  year_achieved int [not null]
+  category varchar(50) [note: 'Olympic, World Cup, etc.']
+  description text
+
+  Note: 'Historical trophies and records (1:N)'
+}
+
+Table sponsors {
+  id text [pk]
+  brand_name varchar(150) [not null, unique]
+  industry varchar(100)
+  country varchar(100)
+  founded_year int
+
+  Note: 'Global brands and sponsoring entities'
+}
+
+Table goat_sponsors {
+  goat_id text [not null]
+  sponsor_id text [not null]
+  deal_value_usd bigint
+  start_year int [not null]
+  is_primary boolean [default: false]
+
+  Indexes {
+    (goat_id, sponsor_id) [pk, note: 'Composite PK prevents duplicate deals']
+  }
+
+  Note: 'Junction table for Many-to-Many (N:N)'
+}
+
+// --- RELATIONSHIPS ---
+
+// 1:1 - One Goat has One Profile
+Ref: goats.id - goat_profiles.goat_id
+
+// 1:N - One Goat has Many Achievements
+Ref: goats.id < goat_achievements.goat_id
+
+// N:N - Many Goats have Many Sponsors (via Junction Table)
+Ref: goats.id < goat_sponsors.goat_id
+Ref: sponsors.id < goat_sponsors.sponsor_id
