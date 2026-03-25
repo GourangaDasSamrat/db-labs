@@ -4,7 +4,7 @@
   },
 
   // prettier sql
-  "Prettier-SQL.SQLFlavourOverride": "sql",
+  "Prettier-SQL.SQLFlavourOverride": "postgresql",
   "Prettier-SQL.ignoreTabSettings": false,
   "Prettier-SQL.tabSizeOverride": 2,
   "Prettier-SQL.insertSpacesOverride": true,
