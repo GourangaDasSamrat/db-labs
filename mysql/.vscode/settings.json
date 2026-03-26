@@ -1,0 +1,20 @@
+{
+  "[sql]": {
+    "editor.defaultFormatter": "inferrinizzard.prettier-sql-vscode"
+  },
+
+  // prettier sql
+  "Prettier-SQL.SQLFlavourOverride": "mysql",
+  "Prettier-SQL.ignoreTabSettings": false,
+  "Prettier-SQL.tabSizeOverride": 2,
+  "Prettier-SQL.insertSpacesOverride": true,
+  "Prettier-SQL.keywordCase": "upper",
+  "Prettier-SQL.indentStyle": "standard",
+  "Prettier-SQL.logicalOperatorNewline": "before",
+  "Prettier-SQL.tabulateAlias": false,
+  "Prettier-SQL.commaPosition": "after",
+  "Prettier-SQL.expressionWidth": 50,
+  "Prettier-SQL.linesBetweenQueries": 1,
+  "Prettier-SQL.denseOperators": false,
+  "Prettier-SQL.newlineBeforeSemicolon": false,
+}
