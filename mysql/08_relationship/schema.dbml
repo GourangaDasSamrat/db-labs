@@ -1,0 +1,67 @@
+// Use this to visualize your GOAT database structure
+
+Table goats {
+  id char(36) [primary key, note: "Generated via UUID()"]
+  name varchar(150) [unique, not null]
+  sport varchar(100) [not null]
+  world_rank int [not null]
+  age int [not null]
+  nationality varchar(100) [not null]
+
+  Note: 'The core table holding athlete basics'
+}
+
+Table goat_profiles {
+  id char(36) [primary key]
+  goat_id char(36) [unique, not null]
+  nickname varchar(100)
+  debut_year int [not null]
+  career_titles int [not null, default: 0]
+  est_net_worth_usd bigint
+  biography text
+
+  Note: 'One-to-One relationship with goats'
+}
+
+Table goat_achievements {
+  id char(36) [primary key]
+  goat_id char(36) [not null]
+  title varchar(200) [not null]
+  year_achieved int [not null]
+  category varchar(50) [not null, note: 'Olympic, Grand Slam, etc.']
+  description text
+
+  Note: 'One-to-Many relationship (One goat, many trophies)'
+}
+
+Table sponsors {
+  id char(36) [primary key]
+  brand_name varchar(150) [unique, not null]
+  industry varchar(100) [not null]
+  country varchar(100) [not null]
+  founded_year int
+
+  Note: 'List of corporate entities'
+}
+
+Table goat_sponsors {
+  goat_id char(36) [not null]
+  sponsor_id char(36) [not null]
+  deal_value_usd bigint
+  start_year int [not null]
+  end_year int [note: 'NULL if active']
+  is_primary boolean [default: false]
+
+  indexes {
+    (goat_id, sponsor_id) [pk] // Composite Primary Key
+  }
+
+  Note: 'Many-to-Many junction table with deal metadata'
+}
+
+// Relationships (Foreign Keys)
+
+Ref: goats.id - goat_profiles.goat_id [delete: cascade] // 1:1
+Ref: goats.id < goat_achievements.goat_id [delete: cascade] // 1:N
+Ref: goats.id < goat_sponsors.goat_id [delete: cascade] // M:N part 1
+Ref: sponsors.id < goat_sponsors.sponsor_id [delete: cascade] // M:N part 2
