@@ -2,7 +2,7 @@
 
 Personal Backend practice repository — a collection of small labs, exercises, and experiments I work on while learning and exploring databse (sql and nosql).
 
-[![SQL Script Validation](https://github.com/gouranga2/db-labs/actions/workflows/sql-validation.yml/badge.svg)](https://github.com/gouranga2/db-labs/actions/workflows/sql-validation.yml)
+[![SQL Script Validation](https://github.com/gourangadassamrat/db-labs/actions/workflows/sql-validation.yml/badge.svg)](https://github.com/gouranga2/db-labs/actions/workflows/sql-validation.yml)
 
 About
 -----
