@@ -1,0 +1,213 @@
+name: SQL Script Validation & Testing
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+jobs:
+  test-sql-scripts:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: test_db
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          - 3306:3306
+
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Download Go dependencies
+        run: |
+          cd scripts
+          go mod download
+          cd ..
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h"127.0.0.1" -u"root" -p"root" --silent; do
+            echo 'waiting for mysql...'
+            sleep 1
+          done
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h 127.0.0.1 -U postgres; do
+            echo 'waiting for postgres...'
+            sleep 1
+          done
+
+      - name: Build test runner
+        run: |
+          cd scripts
+          go build -o test_sql_scripts test_sql_scripts.go
+          cd ..
+
+      - name: Run SQL validation tests
+        id: test
+        run: ./scripts/test_sql_scripts
+        continue-on-error: true
+
+      - name: Build report generator
+        if: always()
+        run: |
+          cd scripts
+          go build -o generate_report generate_report.go
+          cd ..
+
+      - name: Generate test report
+        if: always()
+        run: ./scripts/generate_report
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test_results.json
+          retention-days: 30
+
+      - name: Comment on PR with results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('test_results.json', 'utf8'));
+
+            let comment = '## SQL Script Validation Results\n\n';
+            comment += `**Status**: ${results.status === 'success' ? '✅ PASS' : '❌ FAIL'}\n\n`;
+
+            if (results.failures.length > 0) {
+              comment += '### Failed Scripts\n';
+              results.failures.forEach(failure => {
+                comment += `- ❌ \`${failure.script}\`: ${failure.error}\n`;
+              });
+            }
+
+            if (results.passed > 0) {
+              comment += `\n### Results\n`;
+              comment += `- ✅ Passed: ${results.passed}\n`;
+              comment += `- ❌ Failed: ${results.failures.length}\n`;
+            }
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
+
+      - name: Create/Update issue for failures
+        if: failure() || steps.test.outcome == 'failure'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const results = JSON.parse(fs.readFileSync('test_results.json', 'utf8'));
+            if (results.failures.length === 0) return;
+            const failureList = results.failures
+              .map(f => `- **${f.script}**: ${f.error}`)
+              .join('\n');
+            const body = '## SQL Script Validation Failure Report\n\n' +
+              'Commit: ' + context.sha + '\n' +
+              'Branch: ' + context.ref + '\n' +
+              'Author: @' + context.actor + '\n' +
+              'Timestamp: ' + new Date().toISOString() + '\n\n' +
+              '### Failed Scripts\n\n' +
+              failureList + '\n\n' +
+              '### Action Required\n' +
+              'Please review the failed SQL scripts and fix the issues. The issue will be automatically closed once the failures are resolved in the next push/PR.\n\n' +
+              '[View Workflow Run](' + context.serverUrl + '/' + context.repo.owner + '/' + context.repo.repo + '/actions/runs/' + context.runId + ')';
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['sql-validation-failure']
+            });
+            let existingIssue = issues.data.find(issue =>
+              issue.title.includes('SQL Script Validation Failure')
+            );
+            if (existingIssue) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: existingIssue.number,
+                body: body
+              });
+              console.log(`Updated issue #${existingIssue.number}`);
+            } else {
+              const newIssue = await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'SQL Script Validation Failure',
+                body: body,
+                labels: ['sql-validation-failure', 'bug']
+              });
+              console.log(`Created issue #${newIssue.data.number}`);
+            }
+
+      - name: Auto-close resolved issues
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: ['sql-validation-failure']
+            });
+
+            for (const issue of issues.data) {
+              if (issue.title.includes('SQL Script Validation Failure')) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  state: 'closed'
+                });
+
+                await github.rest.issues.createComment({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  body: `✅ All SQL script validation tests are now passing. This issue is being automatically closed.\n\nCommit: ${context.sha}`
+                });
+
+                console.log(`Closed issue #${issue.number}`);
+              }
+            }
