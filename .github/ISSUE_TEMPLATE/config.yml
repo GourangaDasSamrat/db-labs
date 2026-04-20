@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 📖 Read the Documentation
+    url: https://github.com/YOUR_USERNAME/db-labs/blob/main/README.md
+    about: Review the project README and testing guidelines
+  - name: 💬 Discussions
+    url: https://github.com/YOUR_USERNAME/db-labs/discussions
+    about: Join discussions about database learning and SQL concepts
