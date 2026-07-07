@@ -7,11 +7,12 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "start": "bun src/index.ts",
-    "dev": "bun --hot src/index.ts"
+    "start": "bun bun-bootstrap.ts",
+    "dev": "bun --hot bun-bootstrap.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/express": "^5.0.6"
   },
   "peerDependencies": {
     "typescript": "^5"
