@@ -8,11 +8,13 @@
   "private": true,
   "scripts": {
     "start": "bun bun-bootstrap.ts",
-    "dev": "bun --hot bun-bootstrap.ts"
+    "dev": "bun --hot bun-bootstrap.ts",
+    "format": "prettier --write ."
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/express": "^5.0.6"
+    "@types/express": "^5.0.6",
+    "prettier": "^3.9.4"
   },
   "peerDependencies": {
     "typescript": "^5"

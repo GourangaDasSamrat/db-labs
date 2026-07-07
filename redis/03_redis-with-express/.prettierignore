@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+.next
+out
+coverage
+*.min.js
+*.min.css
+.git
+.DS_Store
