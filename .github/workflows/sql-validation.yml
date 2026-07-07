@@ -2,8 +2,20 @@ name: SQL Script Validation & Testing
 on:
   push:
     branches: [ main, develop ]
+    paths:
+      - 'mysql/**'
+      - 'postgresql/**'
+      - 'scripts/**'
+      - 'go.mod'
+      - 'go.sum'
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'mysql/**'
+      - 'postgresql/**'
+      - 'scripts/**'
+      - 'go.mod'
+      - 'go.sum'
 permissions:
   contents: read
   issues: write
