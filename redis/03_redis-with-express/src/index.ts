@@ -17,9 +17,7 @@ async function start() {
   }
 
   try {
-    const redis = await createRedisClient();
-    // store globally for simple access in this demo app
-    (global as any).__redis_client = redis;
+    await createRedisClient();
   } catch (err) {
     console.warn('Redis connection failed:', err);
   }
