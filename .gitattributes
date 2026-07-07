@@ -1,6 +1,7 @@
-# Ignore the entire scripts folder
-scripts/** linguist-documentation
+# Ignore everything inside the scripts folder completely
+scripts/** linguist-vendored
 
 # Ignore Go module files
 go.mod linguist-generated
 go.sum linguist-generated
+
