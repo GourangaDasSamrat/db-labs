@@ -1,0 +1,27 @@
+{
+  "name": "init",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": "Gouranga Das Samrat",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "bun src/index.ts",
+    "dev": "bun --hot src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "mongoose": "^9.7.4"
+  },
+  "engines": {
+    "bun": ">=1.3.9"
+  },
+  "packageManager": "bun@1.3.9"
+}
