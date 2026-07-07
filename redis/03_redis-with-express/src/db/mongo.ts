@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { MONGO_URI } from "../config";
+import { MONGO_URI } from "@/config";
 
 export async function connectMongo(uri = MONGO_URI) {
   mongoose.set("strictQuery", false);

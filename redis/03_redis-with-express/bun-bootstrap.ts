@@ -15,3 +15,4 @@ if (typeof globalThis.process?.getBuiltinModule === "function") {
 
 // Import the real app entrypoint
 await import("./src/index.ts");
+export { };

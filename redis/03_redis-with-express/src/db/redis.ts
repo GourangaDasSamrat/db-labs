@@ -1,5 +1,5 @@
 import { RedisClient } from "bun";
-import { REDIS_URL } from "../config";
+import { REDIS_URL } from "@/config";
 
 export async function createRedisClient(url = REDIS_URL): Promise<RedisClient> {
   try {
