@@ -3,8 +3,23 @@ import { REDIS_URL } from '@/config';
 
 let redisClient: RedisClient | null = null;
 
-export async function createRedisClient(url = REDIS_URL): Promise<RedisClient> {
-  if (redisClient) return redisClient;
+export async function createRedisClient(
+  url = REDIS_URL,
+  forceNew = false
+): Promise<RedisClient> {
+  if (redisClient && !forceNew) return redisClient;
+
+  // If we're being asked to recreate the client (e.g. after a failed
+  // connection), close the old socket first so it doesn't leak on the
+  // Redis server / Upstash side.
+  if (redisClient) {
+    try {
+      redisClient.close();
+    } catch {
+      // ignore - the old connection may already be dead
+    }
+    redisClient = null;
+  }
 
   try {
     redisClient = new RedisClient(url);
@@ -13,6 +28,18 @@ export async function createRedisClient(url = REDIS_URL): Promise<RedisClient> {
   } catch (err) {
     console.error('Failed to connect to Redis:', err);
     throw err;
+  }
+}
+
+// Explicitly close the client, e.g. on process shutdown / hot reload.
+export function closeRedisClient() {
+  if (redisClient) {
+    try {
+      redisClient.close();
+    } catch {
+      // ignore
+    }
+    redisClient = null;
   }
 }
 
