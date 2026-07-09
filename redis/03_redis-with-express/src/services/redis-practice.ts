@@ -6,7 +6,7 @@ export const redisPractice = () => {
     try {
       return getRedisClient();
     } catch (err) {
-      await createRedisClient();
+      await createRedisClient(undefined, true);
       return getRedisClient();
     }
   };
@@ -23,7 +23,7 @@ export const redisPractice = () => {
       } catch (err: any) {
         console.error('Redis set error, retrying:', err);
         if (err?.message?.includes('Connection has failed')) {
-          await createRedisClient();
+          await createRedisClient(undefined, true);
           redis = getRedisClient();
           await redis.set(key, JSON.stringify(value));
         } else {
@@ -51,7 +51,7 @@ export const redisPractice = () => {
       } catch (err: any) {
         console.error('Redis get error, retrying:', err);
         if (err?.message?.includes('Connection has failed')) {
-          await createRedisClient();
+          await createRedisClient(undefined, true);
           redis = getRedisClient();
           cachedData = await redis.get(key);
         } else {
